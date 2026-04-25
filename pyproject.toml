@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blink1-mic-monitor"
+version = "0.1.0"
+description = "Monitor microphone mute status and reflect it on a Blink(1) device"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "blink1>=0.4.0",
+    "numpy>=2.4.1",
+    "sounddevice>=0.5.5",
+]
+
+[project.scripts]
+micmute-status-monitor = "main:main"
+
+[tool.setuptools]
+py-modules = ["main"]
