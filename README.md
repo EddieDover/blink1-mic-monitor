@@ -1,48 +1,117 @@
 # Mic Mute Status Monitor
 
-Monitors microphone mute status from the selected audio input and reflects that state to a Blink(1) RGB device or the console.
+Monitors microphone mute status from the selected audio input and reflects that state to a [Blink(1)](https://blink1.thingm.com/) RGB device or the console. Includes a system tray icon for easy exit.
 
-## Install
+## Requirements
 
-Create a virtual environment and install the project into it:
+- Rust toolchain (install via [rustup](https://rustup.rs/))
+- A [Blink(1)](https://blink1.thingm.com/) USB device (optional — console output mode works without one)
+- System libraries: ALSA, libusb, GTK3, libappindicator-gtk3
+
+## Installation
+
+The `install.sh` script handles dependency installation, building, and deploying the binary:
 
 ```bash
-uv sync
+./install.sh
 ```
 
-That installs the `micmute-status-monitor` command into `.venv/bin/`.
+This will:
+1. Optionally install required system libraries for your distro (Fedora/RHEL, Debian/Ubuntu, or Arch Linux)
+2. Build the release binary via `cargo build --release`
+3. Install the binary to `~/.local/bin/blink1-mic-monitor`
+4. Install a desktop entry to `~/.local/share/applications/`
+5. Create a udev rule at `/etc/udev/rules.d/51-blink1.rules` for non-root USB access to the Blink(1) device
+
+To uninstall:
+
+```bash
+./uninstall.sh
+```
+
+### Manual Build
+
+```bash
+cargo build --release
+# Binary will be at target/release/blink1-mic-monitor
+```
 
 ## Usage
 
-List input devices:
+List available input devices:
 
 ```bash
-uv run micmute-status-monitor --list-devices
+blink1-mic-monitor --list-devices
 ```
 
-Run with the Blink(1) output:
+Run with the default Blink(1) output (monitors the system default microphone):
 
 ```bash
-uv run micmute-status-monitor -o blink1
+blink1-mic-monitor
 ```
 
-Use a specific microphone device:
+Run with console output instead of Blink(1):
 
 ```bash
-uv run micmute-status-monitor -d 5 -o blink1
+blink1-mic-monitor -o console
 ```
 
-## User Service
-
-A ready-to-copy user `systemd` unit is provided at `systemd/micmute-status-monitor.service`.
-
-To install it for the current user:
+Use a specific input device by index:
 
 ```bash
-mkdir -p ~/.config/systemd/user
-cp systemd/micmute-status-monitor.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now micmute-status-monitor.service
+blink1-mic-monitor -d 2
 ```
 
-If you need a specific input device, edit the `ExecStart` line and add `-d N`.
+Show a live audio level meter in the terminal:
+
+```bash
+blink1-mic-monitor -v
+```
+
+Set a custom muted color (hex):
+
+```bash
+blink1-mic-monitor --muted-color "#ff0000"
+```
+
+Set a custom unmuted color (hex, default is off/black):
+
+```bash
+blink1-mic-monitor --unmuted-color "#00ff00"
+```
+
+### All Options
+
+```
+Usage: blink1-mic-monitor [OPTIONS]
+
+Options:
+      --list-devices           List available input devices and exit
+  -d, --device <DEVICE>        Input device index (default: system default)
+  -o, --output <OUTPUT>        Output method [default: blink1] [possible values: console, blink1]
+  -v, --verbose                Show live audio level meter
+      --muted-color <COLOR>    Blink(1) color when muted [default: #ff0000]
+      --unmuted-color <COLOR>  Blink(1) color when unmuted [default: off]
+  -h, --help                   Print help
+  -V, --version                Print version
+```
+
+## Udev Rule
+
+The `install.sh` script automatically creates the required udev rule for non-root USB access. If you need to set it up manually:
+
+```
+# /etc/udev/rules.d/51-blink1.rules
+SUBSYSTEM=="usb", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE:="0666"
+```
+
+Then reload udev rules:
+
+```bash
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+## Launching
+
+After installation, `blink1-mic-monitor` can be run from your terminal or launched as **Mic Monitor** from your desktop application menu. Right-click the system tray icon and select **Exit** to stop it, or press `Ctrl+C` in the terminal.

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Mic Monitor
+Comment=Blink(1) Microphone Mute Indicator
+Exec=blink1-mic-monitor -o blink1
+Icon=microphone
+Terminal=false
+Categories=Utility;Audio;
+X-GNOME-UsesNotifications=true
