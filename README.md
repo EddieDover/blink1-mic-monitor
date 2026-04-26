@@ -6,7 +6,12 @@ Monitors microphone mute status from the selected audio input and reflects that 
 
 - Rust toolchain (install via [rustup](https://rustup.rs/))
 - A [Blink(1)](https://blink1.thingm.com/) USB device (optional — console output mode works without one)
-- System libraries: ALSA, libusb, GTK3, libappindicator-gtk3
+- System packages: cargo, libxdo development headers, ALSA, libusb, GTK3, libappindicator-gtk3
+
+Package name mapping for the libxdo dependency:
+- Fedora/RHEL: `libxdo-devel`
+- Debian/Ubuntu: `libxdo-dev`
+- Arch: `xdotool` (provides libxdo)
 
 ## Installation
 
@@ -17,7 +22,7 @@ The `install.sh` script handles dependency installation, building, and deploying
 ```
 
 This will:
-1. Optionally install required system libraries for your distro (Fedora/RHEL, Debian/Ubuntu, or Arch Linux)
+1. Optionally install required build/system dependencies for your distro (Fedora/RHEL, Debian/Ubuntu, or Arch Linux)
 2. Build the release binary via `cargo build --release`
 3. Install the binary to `~/.local/bin/blink1-mic-monitor`
 4. Install a desktop entry to `~/.local/share/applications/`

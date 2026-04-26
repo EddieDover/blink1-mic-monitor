@@ -11,16 +11,16 @@ install_dependencies() {
         echo "Fedora/RHEL detected. installing dependencies..."
         # libayatana-appindicator-gtk3-devel is often the modern replacement, 
         # but libappindicator-gtk3-devel is standard for the rust crate usually.
-        sudo dnf install -y alsa-lib-devel libusb1-devel gtk3-devel libappindicator-gtk3-devel
+        sudo dnf install -y cargo alsa-lib-devel libusb1-devel gtk3-devel libappindicator-gtk3-devel libxdo-devel
     elif command -v apt-get >/dev/null; then
         echo "Debian/Ubuntu detected. installing dependencies..."
-        sudo apt-get install -y libasound2-dev libusb-1.0-0-dev libgtk-3-dev libappindicator3-dev build-essential
+        sudo apt-get install -y cargo libasound2-dev libusb-1.0-0-dev libgtk-3-dev libappindicator3-dev libxdo-dev build-essential
     elif command -v pacman >/dev/null; then
         echo "Arch Linux detected. installing dependencies..."
-        sudo pacman -S --needed alsa-lib libusb gtk3 libappindicator-gtk3 base-devel
+        sudo pacman -S --needed cargo alsa-lib libusb gtk3 libappindicator-gtk3 xdotool base-devel
     else
         echo "Warning: Could not detect package manager (dnf/apt/pacman)."
-        echo "Please ensure you have development headers for ALSA, libusb, and GTK3 installed."
+        echo "Please ensure cargo, libxdo development headers, and development headers for ALSA, libusb, and GTK3 are installed."
     fi
 }
 
